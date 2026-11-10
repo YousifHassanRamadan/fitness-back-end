@@ -152,4 +152,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.MapGet("/test", () => "API is working");
+
 app.Run();
