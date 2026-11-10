@@ -8,12 +8,9 @@ using fitness.Application.Common.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.OpenApi;
-
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 using System.Text;
-using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,7 +52,6 @@ builder.Services
                 Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
         };
 
-        // Handle 401 Unauthorized
         options.Events = new JwtBearerEvents
         {
             OnChallenge = async context =>
@@ -85,9 +81,18 @@ builder.Services.AddAuthorization();
 // OpenAPI Configuration
 builder.Services.AddOpenApi(options =>
 {
-    // Add Bearer Security Scheme
     options.AddDocumentTransformer((document, context, cancellationToken) =>
     {
+        // Force HTTPS server URL for Back4app
+        document.Servers =
+        [
+            new OpenApiServer
+            {
+                Url = "https://fitnessbackend-jvunhx8j.back4.app"
+            }
+        ];
+
+        // Bearer Security Scheme
         document.Components ??= new OpenApiComponents();
 
         document.Components.SecuritySchemes =
@@ -132,22 +137,6 @@ builder.Services.AddOpenApi(options =>
 
 var app = builder.Build();
 
-app.UseForwardedHeaders(new ForwardedHeadersOptions
-{
-    ForwardedHeaders = ForwardedHeaders.XForwardedProto,
-    KnownNetworks = { },
-    KnownProxies = { }
-});
-
-app.MapGet("/debug-scheme", (HttpContext context) =>
-    new
-    {
-        Scheme = context.Request.Scheme,
-        Headers = context.Request.Headers
-            .Where(h => h.Key.StartsWith("X-Forwarded"))
-            .ToDictionary(h => h.Key, h => h.Value.ToString())
-    });
-
 // Seed Roles
 using (var scope = app.Services.CreateScope())
 {
@@ -158,9 +147,7 @@ using (var scope = app.Services.CreateScope())
 // HTTP Pipeline
 app.UseMiddleware<ExceptionMiddleware>();
 
-app.UseHttpsRedirection();
 
-// OpenAPI & Scalar (Development + Production)
 app.MapOpenApi();
 app.MapScalarApiReference();
 
