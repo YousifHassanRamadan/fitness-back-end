@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
+    <File Path="Dockerfile" />
   </Folder>
   <Project Path="E:/.net/c#/fitness/fitness.Application/fitness.Application.csproj" />
   <Project Path="E:/.net/c#/fitness/fitness.Domain/fitness.Domain.csproj" />
