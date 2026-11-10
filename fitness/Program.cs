@@ -143,7 +143,9 @@ app.MapGet("/debug-scheme", (HttpContext context) =>
     new
     {
         Scheme = context.Request.Scheme,
-        ForwardedProto = context.Request.Headers["X-Forwarded-Proto"].ToString()
+        Headers = context.Request.Headers
+            .Where(h => h.Key.StartsWith("X-Forwarded"))
+            .ToDictionary(h => h.Key, h => h.Value.ToString())
     });
 
 // Seed Roles
