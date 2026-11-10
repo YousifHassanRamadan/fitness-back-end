@@ -83,16 +83,15 @@ builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer((document, context, cancellationToken) =>
     {
-        // Force HTTPS server URL for Back4app
+        // Force HTTPS server URL for Hostless
         document.Servers =
         [
             new OpenApiServer
             {
-                Url = "https://fitnessbackend-jvunhx8j.back4.app"
+                Url = "https://fitnessdb.hostless.app"
             }
         ];
 
-        // Bearer Security Scheme
         document.Components ??= new OpenApiComponents();
 
         document.Components.SecuritySchemes =
@@ -146,7 +145,6 @@ using (var scope = app.Services.CreateScope())
 
 // HTTP Pipeline
 app.UseMiddleware<ExceptionMiddleware>();
-
 
 app.MapOpenApi();
 app.MapScalarApiReference();
