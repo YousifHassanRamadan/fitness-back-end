@@ -139,6 +139,13 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
     KnownProxies = { }
 });
 
+app.MapGet("/debug-scheme", (HttpContext context) =>
+    new
+    {
+        Scheme = context.Request.Scheme,
+        ForwardedProto = context.Request.Headers["X-Forwarded-Proto"].ToString()
+    });
+
 // Seed Roles
 using (var scope = app.Services.CreateScope())
 {
