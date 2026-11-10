@@ -14,11 +14,15 @@ COPY . .
 RUN dotnet publish fitness/fitness.csproj -c Release -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgssapi-krb5-2 \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 COPY --from=build /app/publish .
 
-ENV ASPNETCORE_URLS=http://+:10000
-EXPOSE 10000
+EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "fitness.dll"]
+ENTRYPOINT ["sh", "-c", "dotnet fitness.dll --urls http://0.0.0.0:${PORT:-8080}"]
