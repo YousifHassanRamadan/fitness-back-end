@@ -1,6 +1,9 @@
 <Solution>
-  <Project Path="fitness.Application/fitness.Application.csproj" />
-  <Project Path="fitness.Domain/fitness.Domain.csproj" />
-  <Project Path="fitness.Infrastructure/fitness.Infrastructure.csproj" />
-  <Project Path="fitness/fitness.csproj" />
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+  </Folder>
+  <Project Path="E:/.net/c#/fitness/fitness.Application/fitness.Application.csproj" />
+  <Project Path="E:/.net/c#/fitness/fitness.Domain/fitness.Domain.csproj" />
+  <Project Path="E:/.net/c#/fitness/fitness.Infrastructure/fitness.Infrastructure.csproj" />
+  <Project Path="E:/.net/c#/fitness/fitness/fitness.csproj" />
 </Solution>

@@ -18,7 +18,7 @@ public static class ServiceCollectionExtentions
     {
         // Database
         services.AddDbContext<FitnessDbContext>(options =>
-            options.UseSqlServer(
+            options.UseNpgsql(
                 configuration.GetConnectionString("DefaultConnection")));
 
         // Identity
