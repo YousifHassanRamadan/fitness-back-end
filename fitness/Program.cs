@@ -84,13 +84,13 @@ builder.Services.AddOpenApi(options =>
     options.AddDocumentTransformer((document, context, cancellationToken) =>
     {
         // Force HTTPS server URL for Hostless
-        document.Servers =
-        [
-            new OpenApiServer
-            {
-                Url = "https://fitnessdb.hostless.app"
-            }
-        ];
+        //document.Servers =
+        //[
+        //    new OpenApiServer
+        //    {
+        //        Url = "https://fitnessdb.hostless.app"
+        //    }
+        //];
 
         document.Components ??= new OpenApiComponents();
 
@@ -134,6 +134,19 @@ builder.Services.AddOpenApi(options =>
     });
 });
 
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendPolicy", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 var app = builder.Build();
 
 // Seed Roles
@@ -148,6 +161,9 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapOpenApi();
 app.MapScalarApiReference();
+
+
+app.UseCors("FrontendPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();

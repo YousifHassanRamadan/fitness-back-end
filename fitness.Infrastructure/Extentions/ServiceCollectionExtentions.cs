@@ -1,6 +1,7 @@
 ﻿using fitness.Application.Interfaces;
 using fitness.Infrastructure.Identity;
 using fitness.Infrastructure.Persistence;
+using fitness.Infrastructure.Repositories;
 using fitness.Infrastructure.Services;
 using fitness.Infrastructure.Settings;
 using Microsoft.AspNetCore.Identity;
@@ -32,6 +33,8 @@ public static class ServiceCollectionExtentions
 
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ICoachManagementRepository,CoachManagementService>();
+        services.AddScoped<IClientManagementRepository,ClientManagementService>();
 
 
         ///JWT Settings

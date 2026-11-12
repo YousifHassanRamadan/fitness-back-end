@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using fitness.Application.Mapping;
+using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -18,6 +19,9 @@ public static class ServiceCollectionExtensions
         // FluentValidation
         services.AddValidatorsFromAssembly(
             Assembly.GetExecutingAssembly());
+
+        services.AddAutoMapper(cfg => { },
+      typeof(CoachMappingProfile));
 
         return services;
     }

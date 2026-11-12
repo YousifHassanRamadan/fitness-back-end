@@ -57,7 +57,8 @@ public class AuthController : ControllerBase
         return Ok(new
         {
             response.AccessToken,
-            response.UserId
+            response.UserId,
+            response.Roles
         });
     }
 

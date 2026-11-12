@@ -90,6 +90,8 @@ public class AuthService : IAuthService
             await _context.RefreshTokens.AddAsync(newRefreshToken);
         }
 
+        var roles = await _userManager.GetRolesAsync(user);
+
         // 7. Save changes
         await _context.SaveChangesAsync();
 
@@ -98,7 +100,8 @@ public class AuthService : IAuthService
         {
             UserId = user.Id,
             AccessToken = accessToken,
-            RefreshToken = refreshToken
+            RefreshToken = refreshToken,
+            Roles = roles.ToList()
         };
     }
 
