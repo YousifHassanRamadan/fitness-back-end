@@ -1,15 +1,16 @@
 
-using fitness.Infrastructure.Extentions;
-using fitness.Infrastructure.Settings;
-using fitness.Infrastructure.Middleware;
-using fitness.Application.Extensions;
 using fitness.Application.Common.Models;
-
+using fitness.Application.Extensions;
+using fitness.Infrastructure.Extentions;
+using fitness.Infrastructure.Identity;
+using fitness.Infrastructure.Middleware;
+using fitness.Infrastructure.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,7 +50,9 @@ builder.Services
 
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+        Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
+
+            RoleClaimType = ClaimTypes.Role
         };
 
         options.Events = new JwtBearerEvents
@@ -152,8 +155,20 @@ var app = builder.Build();
 // Seed Roles
 using (var scope = app.Services.CreateScope())
 {
+    Console.WriteLine("Starting Roles seeding...");
+
     await ServiceCollectionExtentions.SeedRolesAsync(
         scope.ServiceProvider);
+
+    Console.WriteLine("Roles seeding completed.");
+
+    Console.WriteLine("Starting Fitness Database seeding...");
+
+    await FitnessDatabaseSeeder.SeedAsync(
+        scope.ServiceProvider,
+        app.Configuration);
+
+    Console.WriteLine("Fitness Database seeding completed.");
 }
 
 // HTTP Pipeline

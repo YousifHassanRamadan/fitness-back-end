@@ -51,6 +51,124 @@ public interface ICoachManagementRepository
         WorkoutExercise workoutExercise,
         CancellationToken cancellationToken);
 
+    Task<List<WorkoutPlan>> GetWorkoutPlansByCoachAsync(
+    string coachUserId,
+    CancellationToken cancellationToken);
+
+    Task<WorkoutPlan?> GetWorkoutPlanDetailsByCoachAsync(
+    int workoutPlanId,
+    string coachUserId,
+    CancellationToken cancellationToken);
+
+    Task DeleteWorkoutPlanAsync(
+    WorkoutPlan workoutPlan,
+    CancellationToken cancellationToken);
+
+    Task DeleteWorkoutDayAsync(
+    WorkoutDay workoutDay,
+    CancellationToken cancellationToken);
+
+    Task AddExerciseAsync(
+    Exercise exercise,
+    CancellationToken cancellationToken);
+
+    Task<List<Exercise>> GetExercisesByCoachAsync(
+    string coachUserId,
+    CancellationToken cancellationToken);
+
+
+    Task DeleteExerciseAsync(
+    Exercise exercise,
+    CancellationToken cancellationToken);
+
+
+    Task<WorkoutExercise?> GetWorkoutExerciseByCoachAsync(
+    int workoutExerciseId,
+    string coachUserId,
+    CancellationToken cancellationToken);
+
+
+    Task DeleteWorkoutExerciseAsync(
+    WorkoutExercise workoutExercise,
+    CancellationToken cancellationToken);
+
+    Task AddWorkoutPlanAssignmentAsync(
+    WorkoutPlanAssignment assignment,
+    CancellationToken cancellationToken);
+
+
+    Task<WorkoutPlanAssignment?> GetWorkoutPlanAssignmentByCoachAsync(
+    int assignmentId,
+    int clientId,
+    string coachUserId,
+    CancellationToken cancellationToken);
+
+    Task DeleteWorkoutPlanAssignmentAsync(
+        WorkoutPlanAssignment assignment,
+        CancellationToken cancellationToken);
+
+    Task AddMealPlanAsync(
+    MealPlan mealPlan,
+    CancellationToken cancellationToken);
+
+    Task<List<MealPlan>> GetMealPlansByCoachAsync(
+    string coachUserId,
+    CancellationToken cancellationToken);
+
+    Task<MealPlan?> GetMealPlanDetailsByCoachAsync(
+    int mealPlanId,
+    string coachUserId,
+    CancellationToken cancellationToken);
+
+    Task DeleteMealPlanAsync(
+    MealPlan mealPlan,
+    CancellationToken cancellationToken);
+
+    Task AddMealAsync(
+    Meal meal,
+    CancellationToken cancellationToken);
+
+
+    Task<Meal?> GetMealByCoachAsync(
+    int mealId,
+    string coachUserId,
+    CancellationToken cancellationToken);
+
+
+    // Meals
+    Task DeleteMealAsync(
+        Meal meal,
+        CancellationToken cancellationToken);
+
+    // Meal Foods
+    Task AddMealFoodAsync(
+        MealFood mealFood,
+        CancellationToken cancellationToken);
+
+    Task<MealFood?> GetMealFoodByCoachAsync(
+        int mealFoodId,
+        string coachUserId,
+        CancellationToken cancellationToken);
+
+    Task DeleteMealFoodAsync(
+        MealFood mealFood,
+        CancellationToken cancellationToken);
+
+    // Meal Plan Assignments
+    Task AddMealPlanAssignmentAsync(
+        MealPlanAssignment assignment,
+        CancellationToken cancellationToken);
+
+    Task<MealPlanAssignment?> GetMealPlanAssignmentByCoachAsync(
+        int assignmentId,
+        int clientId,
+        string coachUserId,
+        CancellationToken cancellationToken);
+
+    Task DeleteMealPlanAssignmentAsync(
+        MealPlanAssignment assignment,
+        CancellationToken cancellationToken);
+
     Task SaveChangesAsync(
         CancellationToken cancellationToken);
 }

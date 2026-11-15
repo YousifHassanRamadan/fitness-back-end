@@ -21,6 +21,11 @@ public interface IClientManagementRepository
     CancellationToken cancellationToken);
 
 
+    Task AddProgressRecordAsync(
+    ProgressRecord progressRecord,
+    CancellationToken cancellationToken);
+
+
 
     Task SaveChangesAsync(CancellationToken cancellationToken);
 }

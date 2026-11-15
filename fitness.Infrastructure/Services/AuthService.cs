@@ -50,9 +50,14 @@ public class AuthService : IAuthService
             throw new UnauthorizedAccessException("Invalid email or password.");
 
         // 3. Generate Access Token
+        // Get user roles
+        var roles = await _userManager.GetRolesAsync(user);
+
+        // Generate Access Token with roles
         var accessToken = _tokenService.GenerateAccessToken(
             user.Id,
-            user.Email!);
+            user.Email!,
+            roles);
 
         // 4. Generate Refresh Token
         var refreshToken = _tokenService.GenerateRefreshToken();
@@ -90,7 +95,7 @@ public class AuthService : IAuthService
             await _context.RefreshTokens.AddAsync(newRefreshToken);
         }
 
-        var roles = await _userManager.GetRolesAsync(user);
+        
 
         // 7. Save changes
         await _context.SaveChangesAsync();
@@ -131,18 +136,25 @@ public class AuthService : IAuthService
             throw new UnauthorizedAccessException("Invalid refresh token.");
         }
 
+        // Get current user roles
+        var roles = await _userManager.GetRolesAsync(user);
+
         // 5. Generate new tokens
+        // Generate new Access Token with roles
         var newAccessToken = _tokenService.GenerateAccessToken(
             user.Id,
-            user.Email);
+            user.Email,
+            roles);
 
         var newRefreshToken = _tokenService.GenerateRefreshToken();
 
         var newRefreshTokenHash =
-            _tokenService.HashRefreshToken(newRefreshToken);
+    _tokenService.HashRefreshToken(newRefreshToken);
 
         // 6. Replace the old refresh token
         var now = DateTime.UtcNow;
+
+
 
         storedToken.TokenHash = newRefreshTokenHash;
         storedToken.CreatedAt = now;
@@ -159,7 +171,8 @@ public class AuthService : IAuthService
         {
             UserId = user.Id,
             AccessToken = newAccessToken,
-            RefreshToken = newRefreshToken
+            RefreshToken = newRefreshToken,
+            Roles = roles.ToList()
         };
     }
 

@@ -137,4 +137,281 @@ public class CoachManagementService
 
         await _context.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task<List<WorkoutPlan>> GetWorkoutPlansByCoachAsync(
+    string coachUserId,
+    CancellationToken cancellationToken)
+    {
+        return await _context.WorkoutPlans
+            .Where(p => p.Coach.UserId == coachUserId)
+            .ToListAsync(cancellationToken);
+    }
+
+
+    public async Task<WorkoutPlan?> GetWorkoutPlanDetailsByCoachAsync(
+    int workoutPlanId,
+    string coachUserId,
+    CancellationToken cancellationToken)
+    {
+        return await _context.WorkoutPlans
+            .Where(p => p.Id == workoutPlanId &&
+                        p.Coach.UserId == coachUserId)
+            .Include(p => p.WorkoutDays)
+                .ThenInclude(d => d.WorkoutExercises)
+                    .ThenInclude(we => we.Exercise)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task DeleteWorkoutPlanAsync(
+    WorkoutPlan workoutPlan,
+    CancellationToken cancellationToken)
+    {
+        _context.WorkoutPlans.Remove(workoutPlan);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task DeleteWorkoutDayAsync(
+    WorkoutDay workoutDay,
+    CancellationToken cancellationToken)
+    {
+        _context.WorkoutDays.Remove(workoutDay);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+
+    public async Task AddExerciseAsync(
+    Exercise exercise,
+    CancellationToken cancellationToken)
+    {
+        await _context.Exercises.AddAsync(exercise, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+
+    public async Task<List<Exercise>> GetExercisesByCoachAsync(
+    string coachUserId,
+    CancellationToken cancellationToken)
+    {
+        return await _context.Exercises
+            .Where(e => e.Coach.UserId == coachUserId)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task DeleteExerciseAsync(
+    Exercise exercise,
+    CancellationToken cancellationToken)
+    {
+        _context.Exercises.Remove(exercise);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+
+    public async Task<WorkoutExercise?> GetWorkoutExerciseByCoachAsync(
+    int workoutExerciseId,
+    string coachUserId,
+    CancellationToken cancellationToken)
+    {
+        return await _context.WorkoutExercises
+            .FirstOrDefaultAsync(
+                we => we.Id == workoutExerciseId &&
+                      we.WorkoutDay.WorkoutPlan.Coach.UserId == coachUserId,
+                cancellationToken);
+    }
+
+    public async Task DeleteWorkoutExerciseAsync(
+    WorkoutExercise workoutExercise,
+    CancellationToken cancellationToken)
+    {
+        _context.WorkoutExercises.Remove(workoutExercise);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task AddWorkoutPlanAssignmentAsync(
+    WorkoutPlanAssignment assignment,
+    CancellationToken cancellationToken)
+    {
+        _context.WorkoutPlanAssignments.Add(assignment);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+
+    public async Task<WorkoutPlanAssignment?> GetWorkoutPlanAssignmentByCoachAsync(
+    int assignmentId,
+    int clientId,
+    string coachUserId,
+    CancellationToken cancellationToken)
+    {
+        return await _context.WorkoutPlanAssignments
+            .FirstOrDefaultAsync(
+                a => a.Id == assignmentId &&
+                     a.ClientId == clientId &&
+                     a.Client.Coach!.UserId == coachUserId,
+                cancellationToken);
+    }
+
+    public async Task DeleteWorkoutPlanAssignmentAsync(
+        WorkoutPlanAssignment assignment,
+        CancellationToken cancellationToken)
+    {
+        _context.WorkoutPlanAssignments.Remove(assignment);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+
+    public async Task AddMealPlanAsync(
+    MealPlan mealPlan,
+    CancellationToken cancellationToken)
+    {
+        _context.MealPlans.Add(mealPlan);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<List<MealPlan>> GetMealPlansByCoachAsync(
+    string coachUserId,
+    CancellationToken cancellationToken)
+    {
+        return await _context.MealPlans
+            .Where(mp => mp.Coach.UserId == coachUserId)
+            .OrderByDescending(mp => mp.Id)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<MealPlan?> GetMealPlanDetailsByCoachAsync(
+    int mealPlanId,
+    string coachUserId,
+    CancellationToken cancellationToken)
+    {
+        return await _context.MealPlans
+            .Include(mp => mp.Meals)
+                .ThenInclude(m => m.Foods)
+            .FirstOrDefaultAsync(
+                mp => mp.Id == mealPlanId &&
+                      mp.Coach.UserId == coachUserId,
+                cancellationToken);
+    }
+
+
+    public async Task DeleteMealPlanAsync(
+    MealPlan mealPlan,
+    CancellationToken cancellationToken)
+    {
+        _context.MealPlans.Remove(mealPlan);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+
+    public async Task AddMealAsync(
+    Meal meal,
+    CancellationToken cancellationToken)
+    {
+        _context.Meals.Add(meal);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<Meal?> GetMealByCoachAsync(
+    int mealId,
+    string coachUserId,
+    CancellationToken cancellationToken)
+    {
+        return await _context.Meals
+            .Include(m => m.MealPlan)
+            .FirstOrDefaultAsync(
+                m => m.Id == mealId &&
+                     m.MealPlan.Coach.UserId == coachUserId,
+                cancellationToken);
+    }
+
+    // Delete Meal
+    public async Task DeleteMealAsync(
+        Meal meal,
+        CancellationToken cancellationToken)
+    {
+        _context.Meals.Remove(meal);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    // Add Meal Food
+    public async Task AddMealFoodAsync(
+        MealFood mealFood,
+        CancellationToken cancellationToken)
+    {
+        await _context.Set<MealFood>().AddAsync(
+            mealFood,
+            cancellationToken);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    // Get Meal Food by Coach
+    public async Task<MealFood?> GetMealFoodByCoachAsync(
+        int mealFoodId,
+        string coachUserId,
+        CancellationToken cancellationToken)
+    {
+        return await _context.Set<MealFood>()
+            .Include(f => f.Meal)
+                .ThenInclude(m => m.MealPlan)
+            .FirstOrDefaultAsync(
+                f => f.Id == mealFoodId &&
+                     f.Meal.MealPlan.Coach.UserId == coachUserId,
+                cancellationToken);
+    }
+
+    // Delete Meal Food
+    public async Task DeleteMealFoodAsync(
+        MealFood mealFood,
+        CancellationToken cancellationToken)
+    {
+        _context.Set<MealFood>().Remove(mealFood);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    // Add Meal Plan Assignment
+    public async Task AddMealPlanAssignmentAsync(
+        MealPlanAssignment assignment,
+        CancellationToken cancellationToken)
+    {
+        await _context.Set<MealPlanAssignment>().AddAsync(
+            assignment,
+            cancellationToken);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    // Get Meal Plan Assignment by Coach
+    public async Task<MealPlanAssignment?> GetMealPlanAssignmentByCoachAsync(
+        int assignmentId,
+        int clientId,
+        string coachUserId,
+        CancellationToken cancellationToken)
+    {
+        return await _context.Set<MealPlanAssignment>()
+            .FirstOrDefaultAsync(
+                a => a.Id == assignmentId &&
+                     a.ClientId == clientId &&
+                     a.Client.Coach != null &&
+                     a.Client.Coach.UserId == coachUserId,
+                cancellationToken);
+    }
+
+    // Delete Meal Plan Assignment
+    public async Task DeleteMealPlanAssignmentAsync(
+        MealPlanAssignment assignment,
+        CancellationToken cancellationToken)
+    {
+        _context.Set<MealPlanAssignment>().Remove(assignment);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
 }

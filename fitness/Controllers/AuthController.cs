@@ -1,4 +1,5 @@
-﻿using fitness.Application.Features.Auth.Commands.Login;
+﻿
+using fitness.Application.Features.Auth.Commands.Login;
 using fitness.Application.Features.Auth.Commands.Logout;
 using fitness.Application.Features.Auth.Commands.RefreshToken;
 using fitness.Application.Features.Auth.Commands.Register;
@@ -23,7 +24,6 @@ public class AuthController : ControllerBase
     {
         _mediator = mediator;
         _jwtSettings = jwtSettings.Value;
-
     }
 
     [HttpPost("register")]
@@ -36,12 +36,10 @@ public class AuthController : ControllerBase
         return Ok(new { userId });
     }
 
-
-
     [HttpPost("login")]
     public async Task<IActionResult> Login(
-    LoginCommand command,
-    CancellationToken cancellationToken)
+        LoginCommand command,
+        CancellationToken cancellationToken)
     {
         var response = await _mediator.Send(command, cancellationToken);
 
@@ -50,8 +48,9 @@ public class AuthController : ControllerBase
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.UtcNow.AddDays(7)
+                SameSite = SameSiteMode.None,
+                Expires = DateTimeOffset.UtcNow.AddDays(
+                    _jwtSettings.RefreshTokenExpirationInDays)
             });
 
         return Ok(new
@@ -64,7 +63,7 @@ public class AuthController : ControllerBase
 
     [HttpPost("refresh-token")]
     public async Task<IActionResult> RefreshToken(
-    CancellationToken cancellationToken)
+        CancellationToken cancellationToken)
     {
         if (!Request.Cookies.TryGetValue("refreshToken", out var refreshToken)
             || string.IsNullOrEmpty(refreshToken))
@@ -86,7 +85,7 @@ public class AuthController : ControllerBase
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Expires = DateTimeOffset.UtcNow.AddDays(
                     _jwtSettings.RefreshTokenExpirationInDays)
             });
@@ -94,13 +93,14 @@ public class AuthController : ControllerBase
         return Ok(new
         {
             response.AccessToken,
-            response.UserId
+            response.UserId,
+            response.Roles
         });
     }
 
-
     [HttpPost("logout")]
-    public async Task<IActionResult> Logout(CancellationToken cancellationToken)
+    public async Task<IActionResult> Logout(
+        CancellationToken cancellationToken)
     {
         if (Request.Cookies.TryGetValue("refreshToken", out var refreshToken)
             && !string.IsNullOrEmpty(refreshToken))
@@ -119,7 +119,7 @@ public class AuthController : ControllerBase
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict
+                SameSite = SameSiteMode.None
             });
 
         return NoContent();
@@ -128,7 +128,7 @@ public class AuthController : ControllerBase
     [Authorize]
     [HttpGet("me")]
     public async Task<IActionResult> GetCurrentUser(
-    CancellationToken cancellationToken)
+        CancellationToken cancellationToken)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -145,6 +145,3 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 }
-
-
-

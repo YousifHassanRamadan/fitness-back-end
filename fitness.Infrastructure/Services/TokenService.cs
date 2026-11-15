@@ -20,33 +20,38 @@ namespace fitness.Infrastructure.Services
             _jwtSettings = jwtSettings.Value;
         }
 
-        public string GenerateAccessToken(string userId, string email)
+        public string GenerateAccessToken(
+     string userId,
+     string email,
+     IEnumerable<string> roles)
         {
             var claims = new List<Claim>
-         {
-             new Claim(ClaimTypes.NameIdentifier,userId),
-              new Claim(ClaimTypes.Email, email)
-         };
+    {
+        new Claim(ClaimTypes.NameIdentifier, userId),
+        new Claim(ClaimTypes.Email, email)
+    };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
+            claims.AddRange(
+                roles.Select(role =>
+                    new Claim(ClaimTypes.Role, role)));
+
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
 
             var credentials = new SigningCredentials(
-              key,
-              SecurityAlgorithms.HmacSha256);
-
+                key,
+                SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                        issuer: _jwtSettings.Issuer,
-                        audience: _jwtSettings.Audience,
-                        claims: claims,
-                         expires: DateTime.UtcNow.AddMinutes(
-                       _jwtSettings.ExpirationInMinutes),
-                      signingCredentials: credentials
-               );
-
+                issuer: _jwtSettings.Issuer,
+                audience: _jwtSettings.Audience,
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(
+                    _jwtSettings.ExpirationInMinutes),
+                signingCredentials: credentials
+            );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
-
         }
 
         public string GenerateRefreshToken()

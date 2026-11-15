@@ -66,4 +66,15 @@ public class ClientManagementService : IClientManagementRepository
             .OrderByDescending(p => p.RecordedAt)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task AddProgressRecordAsync(
+    ProgressRecord progressRecord,
+    CancellationToken cancellationToken)
+    {
+        await _context.Set<ProgressRecord>().AddAsync(
+            progressRecord,
+            cancellationToken);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
 }
