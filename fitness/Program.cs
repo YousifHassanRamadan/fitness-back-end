@@ -87,13 +87,13 @@ builder.Services.AddOpenApi(options =>
     options.AddDocumentTransformer((document, context, cancellationToken) =>
     {
         // Force HTTPS server URL for Hostless
-        //document.Servers =
-        //[
-        //    new OpenApiServer
-        //    {
-        //        Url = "https://fitnessdb.hostless.app"
-        //    }
-        //];
+        document.Servers =
+        [
+            new OpenApiServer
+            {
+                Url = "https://fitnessdb.hostless.app"
+            }
+        ];
 
         document.Components ??= new OpenApiComponents();
 
